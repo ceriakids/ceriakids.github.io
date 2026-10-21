@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JoMain Matematik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFCFF; --line:#D3E1F5; --margin:#F2958C;
+  --ink:#1F3A93; --ink-soft:#5A6BA3;
+  --tile:#FFD23F; --tile-ink:#1F3A93; --tile-edge:#1F3A93;
+  --card:#FFFFFF; --slot:#EEF3FC;
+  --ok:#17905A; --ok-bg:#DCF4E7; --bad:#C93A30; --bad-bg:#FDE4E1;
+  --focus:#E4574B;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131D3B; --line:#1F2C55; --margin:#6E3434;
+    --ink:#E9EEFF; --ink-soft:#A5B2DA;
+    --tile:#FFD23F; --tile-ink:#14203F; --tile-edge:#0B1229;
+    --card:#1A2650; --slot:#22305C;
+    --ok:#52D89C; --ok-bg:#15392F; --bad:#FF8177; --bad-bg:#41201E;
+    --focus:#FFD23F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131D3B; --line:#1F2C55; --margin:#6E3434;
+  --ink:#E9EEFF; --ink-soft:#A5B2DA;
+  --tile:#FFD23F; --tile-ink:#14203F; --tile-edge:#0B1229;
+  --card:#1A2650; --slot:#22305C;
+  --ok:#52D89C; --ok-bg:#15392F; --bad:#FF8177; --bad-bg:#41201E;
+  --focus:#FFD23F;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--paper)}
+body{
+  margin:0;min-height:100vh;color:var(--ink);
+  font-family:"Fredoka","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(90deg,transparent 34px,var(--margin) 34px,var(--margin) 36px,transparent 36px),
+    repeating-linear-gradient(180deg,transparent 0 39px,var(--line) 39px 40px);
+}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+main{max-width:620px;margin:0 auto;padding:18px 16px 40px 50px}
+
+/* Header */
+.centre{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:15px}
+.logo{width:42px;height:42px;border-radius:50%;border:2px dashed var(--ink-soft);display:grid;place-items:center;font-size:11px}
+.title{margin:22px 0 4px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.title .t{font-family:"Andika",sans-serif;font-weight:700;font-size:clamp(28px,7vw,40px);background:var(--tile);color:var(--tile-ink);
+  border:3px solid var(--tile-edge);border-bottom-width:7px;border-radius:12px;padding:0 12px;line-height:1.35}
+.title .t:nth-child(1){transform:rotate(-4deg)}
+.title .t:nth-child(2){transform:rotate(3deg)}
+.title .t:nth-child(3){transform:rotate(-2deg);margin-left:6px}
+.title .t:nth-child(4){transform:rotate(4deg)}
+.title .word{font-size:clamp(28px,7vw,40px);font-weight:700;margin-left:8px}
+.lede{color:var(--ink-soft);margin:10px 0 28px;font-size:17px;line-height:1.5}
+
+/* Mode choice */
+.modes{display:grid;gap:14px}
+.mode{display:flex;gap:16px;align-items:center;text-align:left;background:var(--card);border:3px solid var(--ink);
+  border-radius:18px;padding:18px;box-shadow:0 6px 0 var(--ink);transition:transform .1s}
+.mode:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+.mode .ic{font-size:40px}
+.mode b{display:block;font-size:22px}
+.mode span{color:var(--ink-soft);font-size:16px}
+
+/* Game bar */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.ghost{background:transparent;border:2px solid var(--ink-soft);border-radius:999px;padding:6px 14px;font-size:15px;color:var(--ink-soft)}
+.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink-soft)}
+.dot.done{background:var(--ok);border-color:var(--ok)}
+.dot.miss{background:var(--bad);border-color:var(--bad)}
+.dot.now{border-color:var(--ink);background:var(--tile)}
+.score{font-weight:600;font-size:18px;white-space:nowrap}
+
+.picture{background:var(--card);border:3px solid var(--ink);border-radius:22px;padding:18px;text-align:center;position:relative}
+.emoji{font-size:clamp(84px,24vw,120px);line-height:1.1}
+.speak-btn{display:none;position:absolute;right:12px;top:12px;align-items:center;gap:6px;background:var(--slot);border:2px solid var(--ink-soft);
+  border-radius:999px;padding:6px 12px;font-size:15px}
+.can-speak .speak-btn{display:inline-flex}
+.ask{margin:22px 0 12px;font-size:19px;font-weight:600}
+
+/* Build mode */
+.slots{display:flex;gap:10px 22px;flex-wrap:wrap;justify-content:center;min-height:72px}
+.slot{min-width:76px;height:68px;border:3px dashed var(--ink-soft);border-radius:14px;background:var(--slot);
+  font-family:"Andika",sans-serif;font-size:32px;font-weight:700;color:var(--ink);padding:0 10px}
+.slot.full{border-style:solid;border-color:var(--tile-edge);background:var(--tile);color:var(--tile-ink)}
+.slots.ok .slot{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.slots.no{animation:shake .45s}
+.tiles{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:22px}
+.tile{font-family:"Andika",sans-serif;font-weight:700;font-size:32px;min-width:76px;height:68px;padding:0 14px;
+  background:var(--tile);color:var(--tile-ink);border:3px solid var(--tile-edge);border-bottom-width:7px;border-radius:14px;transition:transform .08s}
+.tile:active{transform:translateY(3px);border-bottom-width:4px}
+.tile[disabled]{opacity:.18;cursor:default}
+
+/* Spelling mode */
+.opts{display:grid;gap:12px}
+.opt{font-family:"Andika",sans-serif;font-size:32px;font-weight:700;background:var(--card);border:3px solid var(--ink);
+  border-radius:16px;padding:10px;box-shadow:0 5px 0 var(--ink);letter-spacing:.04em}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok);box-shadow:0 5px 0 var(--ok)}
+.opt.no{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);box-shadow:0 5px 0 var(--bad);text-decoration:line-through}
+
+.feedback{min-height:34px;text-align:center;margin-top:18px;font-size:21px;font-weight:600}
+.feedback.ok{color:var(--ok)} .feedback.no{color:var(--bad)}
+.next{display:block;margin:12px auto 0;background:var(--ink);color:var(--paper);border:none;border-radius:999px;padding:14px 34px;font-size:20px;font-weight:600}
+
+/* Results */
+.result{text-align:center;padding-top:20px}
+.stars{font-size:62px;letter-spacing:6px}
+.stars .off{filter:grayscale(1);opacity:.25}
+.result h2{font-size:30px;margin:12px 0 6px}
+.result p{color:var(--ink-soft);font-size:18px;margin:0 0 26px}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+.clue{font-family:"Andika",sans-serif;font-size:20px;line-height:1.45;margin:8px auto 0;max-width:32ch}
+.grp{display:flex;gap:8px;flex-wrap:nowrap;justify-content:center;align-items:center}
+.hy{font-family:"Andika",sans-serif;font-size:34px;font-weight:700;margin-left:4px}
+.menu-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.menu-head h2{margin:0;font-size:24px}
+.units h3{font-size:17px;color:var(--ink-soft);margin:24px 0 10px;font-weight:600}
+.unit{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);
+  border:2px solid var(--ink);border-radius:14px;padding:14px 16px;margin-bottom:10px;font-size:18px;font-weight:600}
+.unit small{color:var(--ink-soft);font-weight:500;font-size:14px;white-space:nowrap}
+.unit.all{background:var(--tile);color:var(--tile-ink);border:3px solid var(--tile-edge);border-bottom-width:6px;margin-top:18px}
+.unit.all small{color:var(--tile-ink)}
+@media (max-width:480px){
+  .slot,.tile{min-width:52px;height:58px;font-size:25px;padding:0 8px}
+  .tile{border-bottom-width:6px}
+  .grp{gap:6px}
+}
+
+/* Access code screen */
+.gate{max-width:440px}
+.gate label{display:block;font-weight:600;font-size:19px;margin:6px 0 10px}
+.key{width:100%;font-family:"Andika",sans-serif;font-size:28px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  text-align:center;padding:12px;border:3px solid var(--ink);border-radius:14px;background:var(--card);color:var(--ink)}
+.key:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.key.bad{border-color:var(--bad);animation:shake .45s}
+.gate .next{margin:16px 0 0;width:100%}
+.gate .err{color:var(--bad);font-weight:600;min-height:26px;margin-top:12px;font-size:17px}
+.gate .hint{color:var(--ink-soft);font-size:15px;line-height:1.5;margin-top:6px}
+
+footer{margin-top:44px;color:var(--ink-soft);font-size:13px;line-height:1.5}
+
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== Matematik ===== */
+.qvis{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;min-height:90px}
+.grp5{display:flex;gap:4px;font-size:clamp(28px,8vw,40px);padding:4px 8px;border-radius:12px;background:var(--slot)}
+.eq{font-family:"Andika",sans-serif;font-weight:700;font-size:clamp(40px,11vw,60px);letter-spacing:.03em}
+.eq .q{display:inline-block;min-width:1.4em;border-bottom:5px solid var(--tile-edge);color:var(--ink-soft)}
+.bigword{font-family:"Andika",sans-serif;font-weight:700;font-size:clamp(28px,8vw,40px)}
+.story{font-family:"Andika",sans-serif;font-size:21px;line-height:1.5;text-align:left;max-width:34ch;margin:0 auto}
+.opts.grid{grid-template-columns:1fr 1fr}
+.opt small{display:block;font-size:15px;font-weight:600;color:var(--ink-soft);letter-spacing:0}
+.frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1.05}
+.frac span:first-child{border-bottom:3px solid currentColor;padding:0 8px 2px}
+.rods{display:flex;align-items:flex-end;gap:10px}
+.rod{width:18px;height:180px;border:2px solid var(--tile-edge);border-radius:3px;
+  background:repeating-linear-gradient(180deg,var(--tile) 0 15.6px,var(--tile-edge) 15.6px 17.6px)}
+.cubes{display:grid;grid-template-columns:repeat(3,18px);gap:4px;align-content:end}
+.cube{width:18px;height:18px;background:var(--tile);border:2px solid var(--tile-edge);border-radius:3px}
+.note{color:#fff;font-weight:700;font-size:20px;border-radius:8px;padding:14px 16px;min-width:88px;text-align:center;
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.35)}
+.coin{border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;color:#2b2f3a;line-height:1.05;text-align:center;
+  background:radial-gradient(circle at 35% 30%,#ffffff,#c9ced8 60%,#9aa1ae);border:2px solid #7d8594}
+.vis-svg{width:min(220px,64vw);height:auto}
+.vis-svg .face{fill:var(--card);stroke:var(--ink);stroke-width:5}
+.vis-svg .num{fill:var(--ink);font:600 18px "Fredoka",sans-serif;text-anchor:middle;dominant-baseline:central}
+.vis-svg .hand{stroke:var(--ink);stroke-linecap:round}
+.vis-svg .min{stroke:var(--bad)}
+.vis-svg .shape{fill:var(--tile);stroke:var(--tile-edge);stroke-width:4;stroke-linejoin:round}
+.vis-svg .part{fill:var(--card);stroke:var(--ink);stroke-width:4;stroke-linejoin:round}
+.vis-svg .part.on{fill:var(--tile)}
+.obj3d{font-size:clamp(84px,24vw,120px);line-height:1.1}
+.ck-back{display:block;max-width:620px;margin:0 auto;padding:10px 16px 0 50px;font:600 15px "Fredoka",system-ui,sans-serif;color:var(--ink-soft);text-decoration:none}
+.ck-back::before{content:"‹ "}
+.hint a{color:var(--ink);font-weight:700}
+</style>
+</head>
+<body>
+<a class="ck-back" href="../kedai.html">Kembali ke kedai</a>
+<main id="app"></main>
+<script>window.JM_SCOPE="tahun1";window.JM_STORE="mtc-key";</script>
+<script src="../assets/pass.js"></script>
+<script>
+const CENTRE = { name: "Nama Tadika / Pusat Tuisyen Anda", logoText: "LOGO" };
+const ROUNDS = 10;
+const app = document.getElementById("app");
+let S = {}, sound = true;
+try { sound = localStorage.getItem("mtc-sound") !== "off"; } catch(e) {}
+
+/* ===== Kod akses ===== */
+const KEY_SALT = "mtc-v1";
+const KEY_HASHES = new Set(["ae7bbfa0f7180628f5840008117467c442282c2a0f370d7f7d6f9f5af9cf54a0", "45978f4a361e6a72992261d034cb89a4e6cf19acb095648782bba42d4e1bb8f4", "204de0ac700e0e37c1d45712b4a98c29a39fc84c6d9c579d500675b0e93b459d", "62d56438dc9d40939e5660ec34dbd69d1577c14488ccb3241cbec0825bae43db", "d1004ea471e2d42480bbee25ecb63eb112bce62d5fe70b16f10597ad30c76f1e", "ff7b3f25f23dedb3e5177eca409c1165736a39ddf93bcaed869dd03257672865", "123053070ce1c1719f460aad8300bac399fa903641dd781c3ebef364ffa341db", "5808e13ae9db0b1c8c5dc3b250a3439bedc83912e5af21789320dd024ccd4d3f", "777ca1ca5595cec352e3110b231508a4b458bdd2dba29b857a4217e6974a479c", "2fdb5b546310e691c59bbacb19630825ab8c2e172992c23185c77ced6c82cdc8", "a20ecf9f89b17aee43ea2f2ca1d1c8c1f8de9ff4d8f05ca86f5db79d34cab95d", "96789bb135e27e0e601b513287f3f6eaf1b3735bc70df37a64a3ffa28d2ee590", "1388b05805597a3c5be115d23aaee58000a9d9958c56b8533a2d7dbd74004b52", "89305e91fa13ee0bc88539c1b8b83c5a801aaa32ca54a403f5107ddfff37e225", "bbb86f13394997db18a102650b134b5759b248ba64e01d1e7041ae3235ea3449", "d4a65d28c4000426894d67bb934fe5fe0c36cac22f4116f87e4d133e2ad8962e", "28ce9bf7eff9e7b4da64b3824662a5c280723e2a85d4b08be12a4711e7046169", "4c60d42ca0e3edad6c924bd1dc7bb70664dee50f33b6525bb69ac374b3b706dd", "8681d61986bc86e6261e136352f91d4108c547055ff5ce3f9e19cc76272f6a07", "b7dcb9c6499b4b60ca44a0a5a8afff6ffdb83aaeb2dcaed50a5a74ea638f8d18", "8b2bec5ccf62be8c05f4f50fb505bdada22537756ab4344187c8547511473541", "66428f02007d867763636ec233b9cc689c2cf14a9a68009de286b0bd661a73a4", "f2f7d997b18598cc401761e29f231b27bfcf1655469baf5be348fd64201d74ba", "297fc58259acf922ea1afd3f3334e28cc06c7d8a9b24a0d837ae2675927bd7ee", "6845013b861aab9f0773c312874a4b3109edcb33559760cf01d894aee0c3b287", "dfc30fb5c67fb0d0a8de1cd38be24f4eea658d49cfb820f70a8ef16d124a012a", "ee38ac40d1943d0918843a7b9418a8fea557e5c920df9dfacc8e24a261567c30", "c3d465ef23d346c6836c5979b536aa2aba6de26ea5655132b3da2d484ab25dd2", "6443fa7e8807ccff080fb74fd7ca62fc329fa28ff180e73452ab87f04f54d3bf", "9fb805bf558ef65e55d7e980a011177883205fdb21e5eebdca02b77def40b1f5", "d8b6649e3424f606350776c8f030ff5c2c43bf3ffb07992ed79f66196c37aa9c", "080dfd5253c42231c02ca85b63033288ab9415013f50f4380d6d271c1f35f80e", "539b9134e1f274bbedf93da5bf5cd7498920d76a36580780cfaa2e60402065a9", "6a8d6e4c0759a4e717a75f8eadccf7e4f577da7444913a2ea07d389ba378680a", "8d104505b2aef87a56e27de889916e4aa628af11f2b81a84d05bc7ff7c4cbd3f", "f398df86bd4a738219240ee0c40377ae68587ff65da1bae5e7a2c61857088ca0", "0481f011c1afb1e182c6d472445c5b701f77d84f5e5b68b93326cd7e5e4ef021", "42b6e0c531bf965e5c36b7fb6d0340dc2b98922283c8f6ce5e53ab1050bf4ff1", "fa0be432b8493ae7d74ec6705c533d7fa5685a616b6ce4bb5892b41b89fbc321", "76a1a5521a860f6ca3dcc4686df8268cb7548432312104dde975bdcdc2dafdd0", "088d9ca5e8801320dcaa8ed425f8225960d81f26e5f8f886cd2329001223192c", "525c64d3cac5242cf6efc3e5e0e96f0fd01eb9b6a8d30b9abb7a853460d88978", "0fa4566ed603e27a536b277dcdfcb845c12bc8ad28efa6eedac6ee1dbf1ba049", "6eefdd661112b43c8388bfe4cdb153187fd139fefc2353183c3c103a4c5307bf", "2d2d39ce10c0183d0af4269075148de6ed27e84fc84d8712b7b1b0d32a165de1", "e1fc4621c2fcd0f67b4a643e791b740c8373162e98fdad8537e9c45cfe2dc737", "fabe56694617616af49d970eccac876e192b58fa14e769b7be222c681615d474", "a728c36d63d0eae28a365ee7631bdb2bf12c13abd3cf6b32b5579b88289c6b4f", "86cab9716dff0701b4e9c2a64923ae460608b9a9c65843ab0c91746da68b0256", "e04d8f4092532966a879e9c5057724f6d8f4650d1f43576c9449bc9c3fcb51d1"]);
+async function sha256(t){ const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+async function checkKey(code){ const n = code.toUpperCase().replace(/[^A-Z0-9]/g,""); if(n.length<8) return null; const h = await sha256(KEY_SALT+n); return (KEY_HASHES.has(h)?h:(window.jmPass?await jmPass.check(code):null)); }
+const TITLE = `<h1 class="title" aria-label="JoMain Matematik"><span class="t">1</span><span class="t">+</span><span class="t">2</span><span class="word">JoMain Matematik</span></h1>`;
+function gate(){
+  app.innerHTML = TITLE + `
+    <div class="gate">
+      <p class="lede">Masukkan kod akses untuk membuka permainan. Kod ini diberikan selepas pembayaran dan hanya perlu dimasukkan sekali pada setiap peranti.</p>
+      <label for="key">Kod akses</label>
+      <input id="key" class="key" placeholder="MTC-XXXX-XXXX" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button class="next" id="unlock">Buka permainan</button>
+      <div class="err" id="err" aria-live="polite"></div>
+      <p class="hint">Tiada kod? <a href='https://wa.me/60148798352?text=Salam%2C%20saya%20nak%20beli%20JoMain%20Matematik.' target='_blank' rel='noopener'>WhatsApp untuk beli</a>.</p>
+    </div>`;
+  const inp=document.getElementById("key"), err=document.getElementById("err"), btn=document.getElementById("unlock");
+  async function go(){
+    err.textContent=""; inp.classList.remove("bad");
+    if(!(window.crypto&&crypto.subtle)){ err.textContent="Pelayar ini tidak menyokong semakan kod. Cuba buka dengan Chrome atau Safari."; return; }
+    btn.disabled=true; const h=await checkKey(inp.value); btn.disabled=false;
+    if(h){ try{localStorage.setItem("mtc-key",h)}catch(e){} tone([523,659,784]); home(); }
+    else { void inp.offsetWidth; inp.classList.add("bad"); err.textContent="Kod tidak sah. Semak semula ejaan kod anda."; tone([220,185]); }
+  }
+  btn.addEventListener("click",go); inp.addEventListener("keydown",e=>{ if(e.key==="Enter") go(); }); inp.focus();
+}
+function boot(){ let s=null; try{ s=localStorage.getItem("mtc-key"); }catch(e){} if(s&&(KEY_HASHES.has(s)||(window.jmPass&&jmPass.valid(s)))) home(); else gate(); }
+
+/* ===== Alat bantu ===== */
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const ONES=["kosong","satu","dua","tiga","empat","lima","enam","tujuh","lapan","sembilan"];
+function words(n){ if(n<10) return ONES[n]; if(n===10) return "sepuluh"; if(n===11) return "sebelas"; if(n<20) return ONES[n-10]+" belas";
+  if(n===100) return "seratus"; const t=Math.floor(n/10),o=n%10; return (t===1?"sepuluh":ONES[t]+" puluh")+(o?" "+ONES[o]:""); }
+function numOpts(ans,min,max,extra=[]){
+  const c=new Set(); [...extra,ans+1,ans-1,ans+2,ans-2,ans+10,ans-10,ans+3].forEach(v=>{ if(v!==ans&&v>=min&&v<=max) c.add(v); });
+  let out=shuffle([...c]).slice(0,3);
+  while(out.length<3){ const v=rnd(min,max); if(v!==ans&&!out.includes(v)) out.push(v); }
+  return out;
+}
+function Q(o){ return Object.assign({ html:"", text:"", say:"" }, o); }
+function mc(ans, wrong, fmt=x=>String(x)){ return { opts: shuffle([ans,...wrong]).map(v=>({k:String(v), html:fmt(v)})), ans:String(ans) }; }
+
+/* ===== Penjana soalan ===== */
+const OBJ=[["🍎","epal"],["⭐","bintang"],["🐟","ikan"],["🎈","belon"],["🍓","strawberi"],["🚗","kereta"],["🐥","anak ayam"],["🌸","bunga"]];
+function groupsOf(em,n){ let h=""; for(let i=0;i<n;i+=5){ h+=`<span class="grp5">${em.repeat(Math.min(5,n-i))}</span>`; } return h; }
+const NAMES=["Ali","Mei Ling","Siva","Aina","Kumar","Siti","Adam","Farah","Jessica","Hafiz"];
+const ITEMS=[["biji","guli"],["batang","pensel"],["keping","kad"],["buah","buku"],["biji","bola"],["helai","kertas"]];
+
+const GEN = {
+  count(){ const [em,name]=pick(OBJ), n=rnd(3,20);
+    return Q({ html:groupsOf(em,n), text:`Berapakah bilangan ${name}?`, ...mc(n,numOpts(n,1,25)) }); },
+  place(){ const n=rnd(11,99), t=Math.floor(n/10), o=n%10;
+    if(Math.random()<0.5){
+      const rods=`<div class="rods">${'<div class="rod"></div>'.repeat(t)}<div class="cubes">${'<div class="cube"></div>'.repeat(o)}</div></div>`;
+      return Q({ html:rods, text:"Berapakah nombor ini? (1 batang = 10)", ...mc(n,numOpts(n,1,100,[o*10+t])) });
+    }
+    return Q({ html:`<div class="bigword">${n}</div>`, text:`Nombor ${n} ada berapa puluh?`, say:`Nombor ${n} ada berapa puluh?`, ...mc(t,numOpts(t,0,9,[o,t*10].filter(v=>v<=9))) }); },
+  words(){ const n=rnd(11,99), rev=(n%10)*10+Math.floor(n/10);
+    return Q({ html:`<div class="bigword">${words(n)}</div>`, text:"Tulis nombor ini dalam angka.", say:words(n), ...mc(n,numOpts(n,1,100,(n%10&&rev!==n)?[rev]:[])) }); },
+  seq(){ const step=pick([1,2,5,10]), start=step===10?rnd(1,6)*10-rnd(0,1)*5:rnd(1,100-step*4), seq=[0,1,2,3].map(i=>start+i*step), k=rnd(1,3), ans=seq[k];
+    const shown=seq.map((v,i)=>i===k?'<span class="q">?</span>':v).join(", ");
+    return Q({ html:`<div class="eq" style="font-size:clamp(30px,8vw,44px)">${shown}</div>`, text:"Apakah nombor yang hilang?", ...mc(ans,numOpts(ans,0,100,[ans+step,ans-step])) }); },
+  compare(){ const big=Math.random()<0.5, s=new Set(); while(s.size<4) s.add(rnd(1,100)); const arr=[...s], ans=big?Math.max(...arr):Math.min(...arr);
+    return Q({ html:`<div class="bigword">${big?"Paling besar":"Paling kecil"}</div>`, text:`Pilih nombor yang paling ${big?"besar":"kecil"}.`, ...mc(ans,arr.filter(v=>v!==ans)) }); },
+  add10(){ return addSub("+",10); }, add20(){ return addSub("+",20); }, add100(){ return addSub("+",100); },
+  sub10(){ return addSub("-",10); }, sub20(){ return addSub("-",20); }, sub100(){ return addSub("-",100); },
+  frac(){ const parts=pick([2,4]), circ=Math.random()<0.5; let svg;
+    if(circ){
+      const segs=[]; for(let i=0;i<parts;i++){ const a0=i*2*Math.PI/parts-Math.PI/2, a1=(i+1)*2*Math.PI/parts-Math.PI/2;
+        const x0=100+80*Math.cos(a0), y0=100+80*Math.sin(a0), x1=100+80*Math.cos(a1), y1=100+80*Math.sin(a1);
+        segs.push(`<path class="part ${i===0?"on":""}" d="M100 100 L${x0.toFixed(1)} ${y0.toFixed(1)} A80 80 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z"/>`); }
+      svg=`<svg class="vis-svg" viewBox="0 0 200 200">${segs.join("")}</svg>`;
+    } else {
+      const on=rnd(0,parts-1), w=180/parts; let r=""; for(let i=0;i<parts;i++) r+=`<rect class="part ${i===on?"on":""}" x="${10+i*w}" y="50" width="${w}" height="100"/>`;
+      svg=`<svg class="vis-svg" viewBox="0 0 200 200">${r}</svg>`;
+    }
+    const F={ "1/2":["1","2","satu perdua"], "1/4":["1","4","satu perempat"], "3/4":["3","4","tiga perempat"], "1/3":["1","3","satu pertiga"] };
+    const ans=parts===2?"1/2":"1/4";
+    return Q({ html:svg, text:"Berapakah bahagian yang berlorek?", ...mc(ans,Object.keys(F).filter(k=>k!==ans), k=>`<span class="frac"><span>${F[k][0]}</span><span>${F[k][1]}</span></span><small>${F[k][2]}</small>`) }); },
+  rm(){ const D=[[1,"#3A6FD8"],[5,"#2E9E5B"],[10,"#D24A3C"],[20,"#E08A1E"],[50,"#178F8F"]]; let notes, tot;
+    do{ notes=Array.from({length:rnd(2,4)},()=>pick(D)).sort((a,b)=>b[0]-a[0]); tot=notes.reduce((s,n)=>s+n[0],0); }while(tot>100);
+    const html=notes.map(([v,c])=>`<div class="note" style="background:${c}">RM${v}</div>`).join("");
+    return Q({ html, text:"Berapakah jumlah wang ini?", ...mc(tot,numOpts(tot,1,100,[tot+5,tot-5].filter(v=>v>0)),v=>`RM${v}`) }); },
+  sen(){ const C=[5,10,20,50]; let coins, tot;
+    do{ coins=Array.from({length:rnd(2,5)},()=>pick(C)).sort((a,b)=>b-a); tot=coins.reduce((s,n)=>s+n,0); }while(tot>95);
+    const html=coins.map(v=>{ const d=38+C.indexOf(v)*7; return `<div class="coin" style="width:${d}px;height:${d}px">${v}<br>sen</div>`; }).join("");
+    const wrong=[tot+5,tot-5,tot+10,tot-10,tot+20,tot-15,tot-20].filter(v=>v>0&&v<100); 
+    return Q({ html, text:"Berapakah jumlah wang ini?", ...mc(tot,shuffle(wrong).slice(0,3),v=>`${v} sen`) }); },
+  clock(){ const h=rnd(1,12), half=Math.random()<0.5;
+    const lab=(hh,hf)=>`pukul ${hh}${hf?".30":""}`;
+    const ha=((h%12)+(half?0.5:0))*30*Math.PI/180, ma=(half?180:0)*Math.PI/180;
+    let nums=""; for(let i=1;i<=12;i++){ const a=i*30*Math.PI/180; nums+=`<text class="num" x="${(100+68*Math.sin(a)).toFixed(1)}" y="${(100-68*Math.cos(a)).toFixed(1)}">${i}</text>`; }
+    const svg=`<svg class="vis-svg" viewBox="0 0 200 200"><circle class="face" cx="100" cy="100" r="92"/>${nums}
+      <line class="hand min" x1="100" y1="100" x2="${(100+70*Math.sin(ma)).toFixed(1)}" y2="${(100-70*Math.cos(ma)).toFixed(1)}" stroke-width="5"/>
+      <line class="hand" x1="100" y1="100" x2="${(100+45*Math.sin(ha)).toFixed(1)}" y2="${(100-45*Math.cos(ha)).toFixed(1)}" stroke-width="8"/>
+      <circle cx="100" cy="100" r="7" fill="var(--ink)"/></svg>`;
+    const wrap=x=>((x-1+12)%12)+1;
+    const cand=[[h,!half],[wrap(h+1),half],[wrap(h-1),half],[wrap(h+6),half],[half?6:12,false]].map(([a,b])=>lab(a,b)).filter(x=>x!==lab(h,half));
+    return Q({ html:svg, text:"Pukul berapakah sekarang?", ...mc(lab(h,half),shuffle([...new Set(cand)]).slice(0,3)) }); },
+  s2d(){ const sh=pick(["segi empat sama","segi empat tepat","segi tiga","bulatan"]); let g;
+    if(sh==="segi empat sama") g=`<rect class="shape" x="45" y="45" width="110" height="110"/>`;
+    if(sh==="segi empat tepat") g=Math.random()<0.5?`<rect class="shape" x="20" y="60" width="160" height="80"/>`:`<rect class="shape" x="60" y="20" width="80" height="160"/>`;
+    if(sh==="segi tiga") g=pick([`<polygon class="shape" points="100,25 180,170 20,170"/>`,`<polygon class="shape" points="30,30 170,170 30,170"/>`,`<polygon class="shape" points="40,40 175,100 40,165"/>`]);
+    if(sh==="bulatan") g=`<circle class="shape" cx="100" cy="100" r="75"/>`;
+    return Q({ html:`<svg class="vis-svg" viewBox="0 0 200 200">${g}</svg>`, text:"Apakah nama bentuk ini?", ...mc(sh,["segi empat sama","segi empat tepat","segi tiga","bulatan"].filter(x=>x!==sh)) }); },
+  s3d(){ const M={kubus:["🎲","🧊"],kuboid:["📦","🧱"],sfera:["⚽","🏀","🌍"],silinder:["🥫","🔋","🥁"],kon:["🍦"]};
+    const ans=pick(Object.keys(M)), em=pick(M[ans]);
+    return Q({ html:`<div class="obj3d" role="img" aria-label="Objek">${em}</div>`, text:"Objek ini berbentuk apa?", ...mc(ans,shuffle(Object.keys(M).filter(k=>k!==ans)).slice(0,3)) }); }
+};
+function addSub(op,max){
+  let a,b;
+  if(op==="+"){ if(max===10){a=rnd(1,9);b=rnd(1,10-a);} else if(max===20){a=rnd(3,17);b=rnd(Math.max(1,11-a),20-a);} else {a=rnd(10,89);b=rnd(2,100-a);} }
+  else { if(max===10){a=rnd(2,10);b=rnd(1,a);} else if(max===20){a=rnd(11,20);b=rnd(1,a-1);} else {a=rnd(20,99);b=rnd(2,a-5);} }
+  const ans=op==="+"?a+b:a-b;
+  const opts=mc(ans,numOpts(ans,0,max===100?100:max+5));
+  if(max<=20 && Math.random()<0.35){
+    const n1=pick(NAMES), n2=pick(NAMES.filter(x=>x!==n1)), [pb,it]=pick(ITEMS);
+    const t= op==="+" ? `${n1} ada ${a} ${pb} ${it}. ${n2} memberi ${b} ${pb} ${it} lagi. Berapakah jumlah ${it} ${n1} sekarang?`
+                     : `${n1} ada ${a} ${pb} ${it}. ${n1} memberi ${b} ${pb} ${it} kepada ${n2}. Berapakah baki ${it} ${n1}?`;
+    return Q({ html:`<p class="story">${t}</p>`, text:"Baca dan selesaikan.", say:t, ...opts });
+  }
+  let vis="";
+  if(max===10 && op==="+"){ const em=pick(OBJ)[0]; vis=`<div class="qvis" style="margin-top:8px">${groupsOf(em,a)}<b style="font-size:32px">+</b>${groupsOf(em,b)}</div>`; }
+  return Q({ html:`<div><div class="eq">${a} ${op==="+"?"+":"−"} ${b} = <span class="q">?</span></div>${vis}</div>`, text: op==="+"?"Berapakah jumlahnya?":"Berapakah bakinya?", say:`${a} ${op==="+"?"tambah":"tolak"} ${b}`, ...opts });
+}
+
+const TOPICS = [
+  { tema:"Nombor bulat hingga 100", items:[["count","Kira objek","hingga 20"],["place","Nilai tempat","puluh dan sa"],["words","Nombor dalam perkataan","hingga 99"],["seq","Nombor yang hilang","urutan"],["compare","Banding nombor","besar dan kecil"]] },
+  { tema:"Tambah", items:[["add10","Tambah","hingga 10"],["add20","Tambah","hingga 20"],["add100","Tambah","hingga 100"]] },
+  { tema:"Tolak", items:[["sub10","Tolak","dalam 10"],["sub20","Tolak","dalam 20"],["sub100","Tolak","dalam 100"]] },
+  { tema:"Pecahan", items:[["frac","Satu perdua dan satu perempat",""]] },
+  { tema:"Wang", items:[["rm","Kira wang kertas","hingga RM100"],["sen","Kira wang syiling","hingga 95 sen"]] },
+  { tema:"Masa dan waktu", items:[["clock","Baca jam","jam dan setengah jam"]] },
+  { tema:"Ruang", items:[["s2d","Bentuk 2D",""],["s3d","Bentuk 3D",""]] }
+];
+const ALL_IDS = TOPICS.flatMap(t=>t.items.map(i=>i[0]));
+
+/* ===== Bunyi ===== */
+let ac;
+function tone(freqs){ if(!sound) return; try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); const t=ac.currentTime;
+  freqs.forEach((f,i)=>{ const o=ac.createOscillator(),g=ac.createGain(),s=t+i*0.12; o.type="triangle"; o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.22,s+0.02); g.gain.exponentialRampToValueAtTime(0.0001,s+0.26);
+    o.connect(g).connect(ac.destination); o.start(s); o.stop(s+0.3); }); }catch(e){} }
+let voice=null;
+function loadVoices(){ if(!("speechSynthesis" in window)) return; const vs=speechSynthesis.getVoices();
+  voice=vs.find(v=>/^ms/i.test(v.lang))||vs.find(v=>/^id/i.test(v.lang))||null; document.body.classList.toggle("can-speak",!!voice); }
+if("speechSynthesis" in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function speak(t){ if(!sound||!voice) return; try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.voice=voice; u.lang=voice.lang; u.rate=0.85; speechSynthesis.speak(u); }catch(e){} }
+
+/* ===== Skrin ===== */
+function home(){
+  let html="";
+  TOPICS.forEach(t=>{ html+=`<h3>${t.tema}</h3>`; t.items.forEach(([id,name,sub])=>{ html+=`<button class="unit" data-act="start" data-topic="${id}">${name}<small>${sub}</small></button>`; }); });
+  app.innerHTML = `<div class="centre"><div class="logo">${CENTRE.logoText}</div><div>${CENTRE.name}</div></div>${TITLE}
+    <p class="lede">Latihan Matematik Tahun 1. Soalan dijana secara automatik, jadi setiap pusingan berbeza.</p>
+    <div class="units"><button class="unit all" data-act="start" data-topic="all">Campur semua topik<small>${ALL_IDS.length} jenis soalan</small></button>${html}</div>
+    <footer>Logo dan nama pusat boleh disesuaikan.</footer>`;
+}
+function start(topic){
+  const rounds=[], seen=new Set();
+  let guard=0;
+  while(rounds.length<ROUNDS && guard++<500){
+    const id = topic==="all" ? pick(ALL_IDS) : topic;
+    const q = GEN[id](); const key=q.html+q.text+q.ans;
+    if(seen.has(key)) continue; seen.add(key); rounds.push(q);
+  }
+  S={ topic, rounds, i:0, score:0, marks:[] }; round();
+}
+function bar(){
+  const n=S.rounds.length, dots=S.rounds.map((_,k)=>`<span class="dot ${k<S.i?(S.marks[k]?"done":"miss"):k===S.i?"now":""}"></span>`).join("");
+  return `<div class="bar"><button class="ghost" data-act="home">Keluar</button>
+    <div class="dots" aria-label="Soalan ${S.i+1} daripada ${n}">${dots}</div>
+    <div class="score">⭐ ${S.score} <button class="ghost" data-act="sound" aria-label="${sound?"Matikan bunyi":"Hidupkan bunyi"}" style="margin-left:6px;padding:4px 10px">${sound?"🔊":"🔇"}</button></div></div>`;
+}
+function round(){ S.first=true; S.solved=false; S.wrong=[]; draw(); }
+function draw(fb=""){
+  const q=S.rounds[S.i], last=S.i===S.rounds.length-1;
+  const opts=q.opts.map(o=>{ const cls=S.solved&&o.k===q.ans?"ok":S.wrong.includes(o.k)?"no":"";
+    return `<button class="opt ${cls}" data-act="opt" data-v="${o.k}" ${S.solved||S.wrong.includes(o.k)?"disabled":""}>${o.html}</button>`; }).join("");
+  app.innerHTML = bar() + `
+    <div class="picture"><div class="qvis">${q.html}</div><button class="speak-btn" data-act="say">🔈 Dengar</button></div>
+    <p class="ask">${q.text}</p>
+    <div class="opts grid">${opts}</div>
+    <div class="feedback ${fb.startsWith("Betul")?"ok":fb?"no":""}" aria-live="polite">${fb}</div>
+    ${S.solved?`<button class="next" data-act="next">${last?"Lihat keputusan":"Seterusnya"}</button>`:""}`;
+  if(S.solved){ const n=app.querySelector(".next"); n&&n.focus(); }
+}
+function result(){
+  const n=S.rounds.length, s=S.score, p=s/n, stars=p>=0.9?3:p>=0.6?2:1;
+  const msg=stars===3?"Cemerlang! Kamu memang pandai mengira.":stars===2?"Bagus! Sedikit lagi untuk tiga bintang.":"Jangan putus asa. Cuba sekali lagi!";
+  app.innerHTML=`<div class="result"><div class="stars" aria-label="${stars} bintang">${[1,2,3].map(k=>`<span class="${k<=stars?"":"off"}">⭐</span>`).join("")}</div>
+    <h2>Markah: ${s} / ${n}</h2><p>${msg}</p>
+    <div class="row"><button class="next" data-act="again" style="margin:0">Main lagi</button>
+    <button class="ghost" data-act="home" style="font-size:18px;padding:12px 22px">Pilih topik lain</button></div></div>`;
+  tone(stars===3?[523,659,784,1047]:[523,659]);
+}
+app.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]"); if(!b) return; const act=b.dataset.act;
+  if(act==="start") return start(b.dataset.topic);
+  if(act==="home") return home();
+  if(act==="again") return start(S.topic);
+  if(act==="sound"){ sound=!sound; try{localStorage.setItem("mtc-sound",sound?"on":"off")}catch(err){} if(!sound&&"speechSynthesis" in window) speechSynthesis.cancel(); return draw(); }
+  if(act==="say"){ const q=S.rounds[S.i]; return speak(q.say||q.text); }
+  if(act==="next"){ S.i++; return S.i>=S.rounds.length?result():round(); }
+  if(act==="opt"){
+    const q=S.rounds[S.i], v=b.dataset.v;
+    if(v===q.ans){ S.solved=true; S.marks[S.i]=S.first; if(S.first) S.score++; tone([523,659,784]);
+      const msg=S.first?pick(["Betul! Hebat! 🎉","Betul! Bagus sekali! 🌟","Betul! Teruskan! 💪"]):"Betul! Cuba lagi tadi berjaya. 👍"; return draw(msg); }
+    S.first=false; S.wrong.push(v); tone([220,185]); draw("Bukan itu. Cuba lagi!");
+  }
+});
+boot();
+</script>
+</body>
+</html>
