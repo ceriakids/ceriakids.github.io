@@ -95,6 +95,7 @@ h3{font-size:22px;margin:0 0 6px}
 .tag{font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--slot);color:var(--ink)}
 .tag.s-bahasa-melayu{background:var(--t-bm)} .tag.s-matematik{background:var(--t-mat)} .tag.s-sains{background:var(--t-sains)}
 .tag.s-english{background:var(--t-eng)} .tag.s-huruf-dan-nombor{background:var(--t-pra)}
+.tag.s-jawi{background:var(--t-sains)}
 .tag.new{background:var(--tile);color:var(--tile-ink)}
 
 /* ---------- product grid ---------- */

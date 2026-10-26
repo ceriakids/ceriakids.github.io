@@ -5,8 +5,8 @@
    Pastikan setiap blok dipisahkan dengan koma.
    ===================================================================== */
 window.CK = {
-  whatsapp: "60148798352",
-  whatsappDisplay: "014-879 8352",
+  whatsapp: "601163927569",
+  whatsappDisplay: "011-6392 7569",
 
   // Tahap kelas yang dipaparkan dalam penapis kedai
   levels: [
@@ -34,6 +34,26 @@ window.CK = {
         "Skor, kombo dan rekod terbaik untuk dikalahkan"
       ],
       wa: "Salam, saya nak beli JoMain Arked: Tambah (RM25)."
+    },
+    {
+      id: "jawi",
+      name: "JoMain Jawi",
+      subject: "Jawi",
+      level: "tahun1",
+      type: "Permainan kuiz",
+      price: 25,
+      isNew: true,
+      game: "games/jawi.html",
+      img: ["assets/img/jwi-1.webp", "assets/img/jwi-2.webp"],
+      short: "Kenal 37 huruf Jawi dan baca perkataan Islamik.",
+      desc: "Bahagian 1 memperkenalkan semua huruf Jawi. Bahagian 2 melatih anak membaca perkataan Islamik seperti masjid, solat, wuduk dan Ramadan. Sesuai juga untuk murid prasekolah.",
+      features: [
+        "Bahagian 1: nama huruf, cari huruf dan huruf yang hampir sama",
+        "Bahagian 2: baca perkataan Jawi dan pilih ejaan yang betul",
+        "Bina perkataan dengan menyusun huruf dari kanan ke kiri",
+        "36 perkataan Islamik dengan gambar"
+      ],
+      wa: "Salam, saya nak beli JoMain Jawi (RM25)."
     },
     {
       id: "suku-kata",
@@ -161,6 +181,10 @@ window.CK = {
   ],
 
   freebies: [
-    { url: "sumber/lembaran-suku-kata-unit-1.pdf", title: "Lembaran kerja: Suku Kata Unit 1", summary: "Dua halaman PDF untuk dicetak. Unit 1: Keluargaku Sayang, dengan jawapan." }
+    { url: "sumber/lembaran-suku-kata-unit-1.pdf", title: "Lembaran kerja: Suku Kata Unit 1", summary: "Dua halaman PDF untuk dicetak. Unit 1: Keluargaku Sayang, dengan jawapan." },
+    { url: "sumber/carta-huruf-jawi.pdf", title: "Carta Huruf Jawi dan latihan menulis", summary: "Carta 37 huruf Jawi untuk ditampal, dengan 4 halaman latihan menyurih." },
+    { url: "sumber/kad-suku-kata.pdf", title: "Kad Imbas Suku Kata", summary: "50 kad suku kata untuk digunting dan disusun menjadi perkataan." },
+    { url: "sumber/kad-pasangan-10-dan-jam.pdf", title: "Kad Pasangan 10 dan Jam Kertas", summary: "Permainan kad pasangan 10 dan jam kertas untuk belajar membaca waktu." },
+    { url: "sumber/kad-huruf-dan-warna.pdf", title: "Kad Huruf dan Kad Warna", summary: "Kad huruf besar dan kecil A hingga Z, serta 10 kad warna." }
   ]
 };

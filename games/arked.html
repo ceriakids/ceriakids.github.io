@@ -167,7 +167,7 @@ const TITLE=`<h1 class="title" aria-label="JoMain Arked"><span class="t">3</span
 function gate(){
   app.className=""; app.innerHTML=TITLE+`<div class="gate"><p class="lede">Masukkan kod akses untuk membuka permainan. Kod ini diberikan selepas pembayaran dan hanya perlu dimasukkan sekali pada setiap peranti.</p>
   <label for="key">Kod akses</label><input id="key" class="key" placeholder="ARK-XXXX-XXXX" maxlength="16" autocomplete="off" autocapitalize="characters" spellcheck="false">
-  <button class="btn" id="unlock">Buka permainan</button><div class="err" id="err" aria-live="polite"></div><p class="hint">Tiada kod? <a href='https://wa.me/60148798352?text=Salam%2C%20saya%20nak%20beli%20JoMain%20Arked.' target='_blank' rel='noopener'>WhatsApp untuk beli</a>.</p></div>`;
+  <button class="btn" id="unlock">Buka permainan</button><div class="err" id="err" aria-live="polite"></div><p class="hint">Tiada kod? <a href='https://wa.me/601163927569?text=Salam%2C%20saya%20nak%20beli%20JoMain%20Arked.' target='_blank' rel='noopener'>WhatsApp untuk beli</a>.</p></div>`;
   const inp=document.getElementById("key"), err=document.getElementById("err"), btn=document.getElementById("unlock");
   async function go(){ err.textContent=""; inp.classList.remove("bad");
     if(!(window.crypto&&crypto.subtle)){ err.textContent="Pelayar ini tidak menyokong semakan kod. Cuba buka dengan Chrome atau Safari."; return; }
