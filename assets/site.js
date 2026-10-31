@@ -16,7 +16,7 @@ const link = p => `${BASE}produk.html?id=${encodeURIComponent(p.id)}`;
 const tags = p => `<div class="tags">${p.isNew ? '<span class="tag new">Baharu</span>' : ""}<span class="tag s-${slug(p.subject)}">${esc(p.subject)}</span><span class="tag">${esc(levelName(p.level))}</span></div>`;
 
 /* ---------- header & footer ---------- */
-const NAV = [["index.html","Utama","home"],["kedai.html","Kedai","kedai"],["pakej.html","Pakej dan pas","pakej"],["pusat.html","Pusat tuisyen","pusat"],["sumber.html","Sumber percuma","sumber"],["cara-beli.html","Cara beli","carabeli"]];
+const NAV = [["index.html","Utama","home"],["kedai.html","Kedai","kedai"],["demo.html","Cuba percuma","demo"],["pakej.html","Pakej dan pas","pakej"],["pusat.html","Pusat tuisyen","pusat"],["sumber.html","Sumber percuma","sumber"],["cara-beli.html","Cara beli","carabeli"]];
 const hdr = $("#hdr");
 if (hdr) hdr.innerHTML = `<div class="site-head"><a class="brand" href="${BASE}index.html" aria-label="JoMain, laman utama"><i>Jo</i>Main</a>
   ${waBtn("Salam, saya ada pertanyaan tentang JoMain.","WhatsApp kami","small")}</div>
@@ -75,7 +75,7 @@ R.produk = () => {
     <div class="phones">${p.img.map(s => `<div class="phone"><img src="${BASE}${s}" alt="Paparan ${esc(p.name)}"></div>`).join("")}</div>
     <div>${tags(p)}<h1>${esc(p.name)}</h1><p class="short">${esc(p.short)}</p>
       <div class="buybox"><div class="row"><span class="price">RM${p.price}</span>${waBtn(p.wa, "Beli melalui WhatsApp")}</div>
-      <p class="alt">Sudah ada kod? <a href="${BASE}${p.game}">Buka permainan</a>.</p>
+      <p class="alt"><a href="${BASE}${p.game}?demo=1">🎮 Cuba demo percuma</a> &nbsp;|&nbsp; Sudah ada kod? <a href="${BASE}${p.game}">Buka permainan</a>.</p>
       ${pass ? `<p class="alt">Atau dapatkan semua permainan ${esc(levelName(pass.level))} dengan <a href="${BASE}pakej.html">${esc(pass.name)}, dari RM${pass.founderPrice||pass.price}</a>.</p>` : ""}</div>
       <h3>Apa yang ada di dalamnya</h3><ul class="feat">${p.features.map(f => `<li>${esc(f)}</li>`).join("")}</ul>
       <p>${esc(p.desc)}</p>
@@ -100,6 +100,12 @@ function bundleBlock(b){
   return `<div class="bundle"><div><h3>${esc(b.name)}</h3><p>${items.map(p => esc(p.name)).join(" dan ")}</p></div>
     <div class="row" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><span class="price">RM${b.price}<s>RM${total}</s></span>${waBtn(b.wa,"Beli pakej")}</div></div>`;
 }
+R.demo = () => {
+  $("#demos").innerHTML = D.products.map(p => `<article class="pcard"><a class="shot" href="${BASE}${p.game}?demo=1" tabindex="-1" aria-hidden="true"><img src="${BASE}${p.img[0]}" alt="" loading="lazy"></a>
+    <div class="body">${tags(p)}<h3>${esc(p.name)}</h3><p>${esc(p.short)}</p>
+    <div class="foot"><a class="btn ink small" href="${BASE}${p.game}?demo=1">Cuba percuma</a><a class="btn ghost small" href="${link(p)}">RM${p.price}</a></div></div></article>`).join("");
+};
+
 R.pakej = () => {
   $("#passes").innerHTML = D.passes.map(passBlock).join("");
   $("#bundles").innerHTML = D.bundles.map(bundleBlock).join("");
